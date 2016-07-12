@@ -6,6 +6,7 @@
 
 const Promise = require('bluebird')
 const pg = require('pg')
+const fs = require('fs')
 const winston = require('winston')
 
 /**
@@ -37,11 +38,11 @@ module.exports.createDatabase = config => {
     client.connect(err => {
       if (err) return reject(err)
       // Не понял как безопасно подставить переменную в запрос
-      client.query('select 2 as cnt', (err, result) => {
+      // client.query('select 2 as cnt', (err, result) => {
       // client.query('CREATE DATABASE $1', [config.PGDATABASE], (err, result) => {
-      // client.query('CREATE DATABASE ' + config.PGDATABASE, (err, result) => {
+      client.query('CREATE DATABASE ' + config.PGDATABASE, (err, result) => {
         if (err) return reject(err)
-        winston.info('Create database SUCCESS')
+        winston.info('Create database %s SUCCESS: ', config.PGDATABASE)
         resolve(config)
       })
     })
@@ -64,10 +65,13 @@ module.exports.createTables = config => {
     let client = new pg.Client(cfg)
     client.connect(err => {
       if (err) return reject(err)
-      client.query('SELECT 1 AS cnt', (err, result) => {
+      fs.readFile(global.NODE_ROOT + '/init/init.sql', 'utf8', (err, sql) => {
         if (err) return reject(err)
-        console.log(result.rows[0])
-        resolve(client)
+        client.query(sql, (err, result) => {
+          if (err) return reject(err)
+          console.log(result.rows)
+          resolve(client)
+        })
       })
     })
   })
