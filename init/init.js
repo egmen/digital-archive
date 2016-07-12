@@ -1,19 +1,30 @@
 'use strict'
 
 /**
- * Проверки конфигурации
+ * Функции проверки конфигурации окружения
  */
 
 const Promise = require('bluebird')
 const pg = require('pg')
 const winston = require('winston')
 
+/**
+ * Проверка существования директории окружения
+ * откуда беруться первоначальное заполнение базы данных
+ * @param  {Object} config конфигурация окружения
+ * @return {Object}        конфигурация окружения либо ошибка
+ */
 module.exports.checkDirectory = config => {
   return new Promise((resolve, reject) => {
     resolve(config)
   })
 }
 
+/**
+ * Проверка базы данных и создания новой
+ * @param  {Object} config конфигурация окружения
+ * @return {Object}        конфигурация окружения либо ошибка
+ */
 module.exports.checkDatabase = config => {
   return new Promise((resolve, reject) => {
     let cfg = {
@@ -25,13 +36,11 @@ module.exports.checkDatabase = config => {
     let client = new pg.Client(cfg)
     client.connect(err => {
       if (err) return reject(err)
-      winston.info('Connection SUCCESS')
       // Не понял как безопасно подставить переменную в запрос
       // client.query('CREATE DATABASE $1', [config.PGDATABASE], (err, result) => {
       client.query('CREATE DATABASE ' + config.PGDATABASE, (err, result) => {
         if (err) return reject(err)
-        winston.info('Select SUCCESS')
-        console.log(result.rows)
+        winston.info('Create database SUCCESS')
         resolve(config)
       })
     })

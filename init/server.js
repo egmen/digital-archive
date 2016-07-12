@@ -16,6 +16,9 @@ let app = express()
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
+/**
+ * Выдача странички с настройкой с генерацией названия базы данных
+ */
 app.get('*', (req, res) => {
   fs.readFile('./init/index.html', 'utf8', (err, content) => {
     if (err) {
@@ -27,6 +30,12 @@ app.get('*', (req, res) => {
   })
 })
 
+/**
+ * Приём введённой конфигурации, проверка настроек
+ * и создание базы данных с дефолтной информацией
+ * @param  {Object}   конфигурация окружение в теле запроса
+ * @return {File}     Файл с конфигурацией окружения
+ */
 app.post('*', (req, res) => {
   let env = Object.keys(req.body)
     .filter(key => req.body[key])
