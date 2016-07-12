@@ -1,13 +1,16 @@
 'use strict'
 
 /**
- * Сервер для вывода единственной странички с генерацией настроек
+ * Сервер для генерации файла окружения
  */
 
 const express = require('express')
 const bodyParser = require('body-parser')
 const fs = require('fs')
 const generate = require('project-name-generator')
+const dotenv = require('dotenv')
+const Promise = require('bluebird')
+const init = require('./init')
 
 let app = express()
 app.use(bodyParser.urlencoded({extended: true}))
@@ -22,6 +25,26 @@ app.get('*', (req, res) => {
       res.send(content.replace(/{{dbName}}/, dbName))
     }
   })
+})
+
+app.post('*', (req, res) => {
+  let env = Object.keys(req.body)
+    .filter(key => req.body[key])
+    .map(key => key + '=' + req.body[key])
+    .join('\n')
+  let config = dotenv.parse(env)
+  Promise.resolve(config)
+    .then(init.checkDirectory)
+    .then(init.checkDatabase)
+    .then(console.log)
+    .then(() => {
+      res.send(env)
+      res.end()
+    })
+    .catch(err => {
+      console.error(err)
+      res.json(err)
+    })
 })
 
 app.listen(8080)

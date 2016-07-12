@@ -9,35 +9,46 @@
 <div class="container">
   <h1>Начальные настройки</h1>
   <hr />
-  <form class="form-horizontal">
+  <form class="form-horizontal" action="/" method="POST">
+    <div class="form-group">
+      <label for="NODE_ENV" class="col-sm-2 control-label">NODE_ENV</label>
+      <div class="col-sm-10">
+        <label class="radio-inline">
+          <input type="radio" name="NODE_ENV" id="inlineRadio1" value="production" checked> production
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="NODE_ENV" id="inlineRadio2" value="development"> development
+        </label>
+      </div>
+    </div>
     <div class="form-group">
       <label for="dbServer" class="col-sm-2 control-label">Сервер БД</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" id="dbServer" placeholder="Сервер БД" value="localhost">
+        <input type="text" class="form-control" id="dbServer" name="PGHOST" placeholder="Сервер БД" value="localhost">
       </div>
     </div>
     <div class="form-group">
       <label for="dbName" class="col-sm-2 control-label">Название БД</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" id="dbName" placeholder="Название БД" value="{{dbName}}">
+        <input type="text" class="form-control" id="dbName" name="PGDATABASE" placeholder="Название БД" value="{{dbName}}">
       </div>
     </div>
     <div class="form-group">
       <label for="login" class="col-sm-2 control-label">Логин</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" id="login" placeholder="Логин">
+        <input type="text" class="form-control" id="login" name="PGUSER" placeholder="Логин">
       </div>
     </div>
     <div class="form-group">
-      <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+      <label for="password" class="col-sm-2 control-label">Пароль</label>
       <div class="col-sm-10">
-        <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+        <input type="password" class="form-control" id="password" name="PGPASSWORD" placeholder="Пароль">
       </div>
     </div>
     <div class="form-group">
       <label for="path" class="col-sm-2 control-label">Каталог файлов</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" id="path" placeholder="Каталог файлов">
+        <input type="text" class="form-control" id="path" name="DIRECTORY" placeholder="Каталог файлов">
       </div>
     </div>
     <div class="form-group">
