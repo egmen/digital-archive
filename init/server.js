@@ -37,14 +37,18 @@ app.get('*', (req, res) => {
  * @return {File}     Файл с конфигурацией окружения
  */
 app.post('*', (req, res) => {
+  // Создание файла из объекта конфигурации
   let env = Object.keys(req.body)
     .filter(key => req.body[key])
     .map(key => key + '=' + req.body[key])
     .join('\n')
   let config = dotenv.parse(env)
+  // Инициализация
   Promise.resolve(config)
     .then(init.checkDirectory)
-    .then(init.checkDatabase)
+    .then(init.createDatabase)
+    .then(init.createTables)
+    .then(init.fillTables)
     .then(console.log)
     .then(() => {
       res.send(env)
