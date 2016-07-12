@@ -47,6 +47,7 @@ app.post('*', (req, res) => {
   Promise.resolve(config)
     .then(init.checkDirectory)
     .then(init.createDatabase)
+    .then(init.connectDatabase)
     .then(init.createTables)
     .then(init.fillTables)
     .then(console.log)

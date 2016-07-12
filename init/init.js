@@ -50,11 +50,11 @@ module.exports.createDatabase = config => {
 }
 
 /**
- * Создание таблиц, вьюшек и всего остального
+ * Подключение к базе данных
  * @param  {Object} config конфигурация окружения
  * @return {Object}        подключение к PostgreSql
  */
-module.exports.createTables = config => {
+module.exports.connectDatabase = config => {
   return new Promise((resolve, reject) => {
     let cfg = {
       database: config.PGDATABASE
@@ -65,13 +65,24 @@ module.exports.createTables = config => {
     let client = new pg.Client(cfg)
     client.connect(err => {
       if (err) return reject(err)
-      fs.readFile(global.NODE_ROOT + '/init/init.sql', 'utf8', (err, sql) => {
+      resolve(client)
+    })
+  })
+}
+
+/**
+ * Создание таблиц, вьюшек и всего остального
+ * @param  {Object} client подключение к PostgreSql
+ * @return {Object}        подключение к PostgreSql
+ */
+module.exports.createTables = client => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(global.NODE_ROOT + '/init/init.sql', 'utf8', (err, sql) => {
+      if (err) return reject(err)
+      client.query(sql, (err, result) => {
         if (err) return reject(err)
-        client.query(sql, (err, result) => {
-          if (err) return reject(err)
-          console.log(result.rows)
-          resolve(client)
-        })
+        console.log(result.rows)
+        resolve(client)
       })
     })
   })
