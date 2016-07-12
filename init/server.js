@@ -52,6 +52,7 @@ app.post('*', (req, res) => {
     .then(init.fillTables)
     .then(console.log)
     .then(() => {
+      fs.writeFileSync('./.env', env)
       res.send(env)
       res.end()
     })
