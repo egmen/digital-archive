@@ -12,7 +12,7 @@ const uuid = require('node-uuid')
 const path = require('path')
 let sqlAddFiles = fs.readFileSync(path.format({dir: __dirname, base: 'addFiles.sql'}), 'utf8')
 let sqlAddFolder = fs.readFileSync(path.format({dir: __dirname, base: 'addFolder.sql'}), 'utf8')
-let sqlCreateTables = fs.readFileSync(path.format({dir: __dirname, base: 'init.sql'}), 'utf8')
+let sqlCreateTables = fs.readFileSync(path.format({dir: __dirname, base: 'createTables.sql'}), 'utf8')
 
 /**
  * Проверка существования директории окружения

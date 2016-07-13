@@ -10,7 +10,7 @@ const fs = require('fs')
 const generate = require('project-name-generator')
 const dotenv = require('dotenv')
 const Promise = require('bluebird')
-const init = require('./init')
+const init = require('./index')
 
 let app = express()
 app.use(bodyParser.urlencoded({extended: true}))
