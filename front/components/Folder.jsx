@@ -1,5 +1,7 @@
 import React from 'react'
 import axios from 'axios'
+import moment from 'moment'
+import prettyByte from 'pretty-byte'
 
 export const Folder = React.createClass({
   getInitialState () {
@@ -9,7 +11,8 @@ export const Folder = React.createClass({
         root: []
       },
       currentFolder: '',
-      currentFolderPath: ''
+      currentFolderPath: '',
+      files: []
     }
   },
   componentWillMount () {
@@ -26,15 +29,27 @@ export const Folder = React.createClass({
       this.setState({
         folders: res.data
       })
-      // console.log(res.data.root)
     })
     .catch(console.log)
   },
-  changeFolder (Id, Path) {
+  changeFolder (Id, path) {
     this.setState({
       currentFolder: Id,
-      currentFolderPath: Path
+      currentFolderPath: path
     })
+    axios({
+      method: 'get',
+      url: '/files',
+      params: {
+        FolderId: Id
+      }
+    })
+    .then(res => {
+      this.setState({
+        files: res.data
+      })
+    })
+    .catch(console.log)
   },
   render () {
     return <div className='row'>
@@ -51,10 +66,12 @@ export const Folder = React.createClass({
           />
         })}
       </div>
-      <div className='col-md-8 col-sm-6'>
+      <div className='col-md-8 col-sm-8'>
         <br /><br /><br />
-        <h3>Текущая папка</h3>
-        <h2>{this.state.currentFolderPath}</h2>
+        <Files
+          path={this.state.currentFolderPath}
+          files={this.state.files}
+        />
       </div>
     </div>
   }
@@ -76,11 +93,11 @@ const FolderItem = React.createClass({
       showChilds: !this.state.showChilds
     })
   },
-  changeFolder (Id, Path) {
+  changeFolder (Id, path) {
     let Name = this.props.folders[this.props.Id].Name
     // Если задана вторая переменная значит это всплывающее событие
-    if (Path) {
-      this.props.changeFolder(Id, Name + '/' + Path)
+    if (path) {
+      this.props.changeFolder(Id, Name + '/' + path)
     } else {
       this.props.changeFolder(this.props.Id, Name)
     }
@@ -106,6 +123,46 @@ const FolderItem = React.createClass({
         })
         : null
       }
+    </div>
+  }
+})
+
+const Files = React.createClass({
+  render () {
+    let total = 0
+    let rows = <tbody>
+      {this.props.files.length
+        ? this.props.files.map((item, n) => {
+          total += +item.Size
+          return <tr key={n}>
+            <td>{item.Name}</td>
+            <td className='text-right'>{+item.Size ? prettyByte(item.Size) : '0'}</td>
+            <td>{moment(item.Ctime).utcOffset(180).format('MM.DD.YYYY HH:MM')}</td>
+          </tr>
+        })
+        : 'Нет файлов в папке'
+      }
+    </tbody>
+    return <div>
+      <h3>Текущая папка</h3>
+      <h4>{this.props.path}</h4>
+      <table className='table table-hover table-condensed table-responsive'>
+        <thead>
+          <tr>
+            <th>Наименование</th>
+            <th className='col-sm-3'>Размер</th>
+            <th className='col-sm-4'>Дата</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <td className='text-right'>Итого {this.props.files.length} файлов</td>
+            <td className='text-right'>{total ? prettyByte(total) : '0'}</td>
+            <td />
+          </tr>
+        </tfoot>
+        {rows}
+      </table>
     </div>
   }
 })

@@ -9,6 +9,7 @@ let db
 const fs = require('fs')
 const path = require('path')
 let sqlGetTree = fs.readFileSync(path.format({dir: __dirname, base: 'getTree.sql'}), 'utf8')
+let sqlGetFiles = fs.readFileSync(path.format({dir: __dirname, base: 'getFiles.sql'}), 'utf8')
 
 /**
  * Подключение к базе данных
@@ -30,9 +31,18 @@ function connectDatabase () {
 }
 connectDatabase()
 
-module.exports.getTree = (client) => {
+module.exports.getTree = () => {
   return new Promise((resolve, reject) => {
     db.query(sqlGetTree, (err, result) => {
+      if (err) return reject(err)
+      resolve(result.rows)
+    })
+  })
+}
+
+module.exports.getFiles = (FolderId) => {
+  return new Promise((resolve, reject) => {
+    db.query(sqlGetFiles, [FolderId], (err, result) => {
       if (err) return reject(err)
       resolve(result.rows)
     })

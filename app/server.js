@@ -28,6 +28,13 @@ app.get('/tree', (req, res) => {
     .catch(console.error)
 })
 
+app.get('/files', (req, res) => {
+  Promise.resolve(req.query.FolderId)
+    .then(db.getFiles)
+    .then(result => res.json(result))
+    .catch(console.error)
+})
+
 app.listen(3000)
 
 function parseTree (tree) {
