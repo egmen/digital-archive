@@ -56,3 +56,9 @@ VALUES ('All')
 ,('Users')
 ,('Other')
 ;
+
+CREATE TABLE "permissions" (
+  "Id" uuid, -- Id файла или папка
+  "Name" character varying(50), -- Логин пользователя либо имя группы
+  "Permission" int -- Сумма разрешений
+);
