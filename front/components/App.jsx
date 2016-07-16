@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import { Link } from 'react-router'
 
 export default React.createClass({
   getInitialState () {
@@ -55,7 +56,7 @@ export default React.createClass({
                     return <li key={n}
                       onClick={() => this.setState({currentUser: item.Login, currentName: item.Name})}
                       className={item.Login === this.state.currentUser ? 'active' : ''}
-                      ><a href='javascript:void(0);'>{item.Name}</a></li>
+                      ><Link to={item.Login}>{item.Name}</Link></li>
                   })}
                 </ul>
               </li>

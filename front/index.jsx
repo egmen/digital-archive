@@ -9,6 +9,7 @@ render((
   <Router history={browserHistory}>
     <Route path='/' component={App}>
       <IndexRoute component={Folder} />
+      <Route path=':user' component={Folder} />
     </Route>
   </Router>
 ), document.getElementById('main'))
