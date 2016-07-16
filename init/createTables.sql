@@ -57,6 +57,16 @@ VALUES ('All')
 ,('Other')
 ;
 
+CREATE TABLE "userGroups" (
+  "Login" character varying(50) REFERENCES "users" ("Login") ON DELETE CASCADE,
+  "Name" character varying(50) REFERENCES "groups" ("Name") ON DELETE CASCADE
+);
+INSERT INTO "userGroups"
+VALUES ('admin', 'Admins')
+,('petr', 'Users')
+,('lena', 'Others')
+;
+
 CREATE TABLE "permissions" (
   "Id" uuid, -- Id файла или папка
   "Name" character varying(50), -- Логин пользователя либо имя группы
