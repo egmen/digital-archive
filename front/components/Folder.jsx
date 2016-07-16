@@ -16,13 +16,17 @@ export const Folder = React.createClass({
     }
   },
   componentWillMount () {
-    this.getTree()
+    this.getTree(this.props.params.user)
   },
-  getTree () {
+  componentWillReceiveProps (history) {
+    this.getTree(history.params.user)
+  },
+  getTree (user) {
     axios({
       method: 'get',
       url: '/tree',
       params: {
+        user: user
       }
     })
     .then(res => {

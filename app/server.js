@@ -49,6 +49,10 @@ app.post('/randomPermissions', (req, res) => {
     .catch(console.error)
 })
 
+app.use((req, res) => {
+  return res.sendFile(global.NODE_ROOT + '/public/index.html')
+})
+
 app.listen(3000)
 
 function parseTree (tree) {
