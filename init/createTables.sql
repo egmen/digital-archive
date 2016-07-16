@@ -33,3 +33,26 @@ VALUES ('Чтение', 'P_READ')
 ,('Перемещение', 'P_MOVE')
 ,('Удаление', 'P_DELETE')
 ;
+
+CREATE TABLE "users" (
+  "Login" character varying(50) PRIMARY KEY,
+  "Name" character varying(255)
+);
+
+INSERT INTO "users" ("Login", "Name")
+VALUES ('admin', 'Админ')
+,('petr', 'Петя')
+,('lena', 'Лена')
+,('nick', 'Джон')
+;
+
+CREATE TABLE "groups" (
+  "Name" character varying(50) PRIMARY KEY
+);
+
+INSERT INTO "groups" ("Name")
+VALUES ('All')
+,('Admins')
+,('Users')
+,('Other')
+;
