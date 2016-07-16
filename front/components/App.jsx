@@ -23,6 +23,16 @@ export default React.createClass({
       })
     })
   },
+  randomPermissions () {
+    axios({
+      method: 'post',
+      url: '/randomPermissions'
+    })
+    .then(res => {
+      let cnt = res.data[0].cnt
+      window.alert('Установлено ' + cnt + ' разрешений')
+    })
+  },
   render () {
     return <div>
       <nav className='navbar navbar-inverse navbar-fixed-top' role='navigation'>
@@ -49,6 +59,7 @@ export default React.createClass({
                   })}
                 </ul>
               </li>
+              <li onClick={this.randomPermissions}><a href='javascript:void(0);'>Установить случайние разрешения</a></li>
             </ul>
           </div>
         </div>

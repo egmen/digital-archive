@@ -42,6 +42,13 @@ app.get('/users', (req, res) => {
     .catch(console.error)
 })
 
+app.post('/randomPermissions', (req, res) => {
+  Promise.resolve(req.query.FolderId)
+    .then(db.setRandomPermissions)
+    .then(result => res.json(result))
+    .catch(console.error)
+})
+
 app.listen(3000)
 
 function parseTree (tree) {

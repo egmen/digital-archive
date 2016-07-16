@@ -10,6 +10,7 @@ const fs = require('fs')
 const path = require('path')
 let sqlGetTree = fs.readFileSync(path.format({dir: __dirname, base: 'getTree.sql'}), 'utf8')
 let sqlGetFiles = fs.readFileSync(path.format({dir: __dirname, base: 'getFiles.sql'}), 'utf8')
+let sqlSetRandomPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'setRandomPermissions.sql'}), 'utf8')
 
 /**
  * Подключение к базе данных
@@ -52,6 +53,15 @@ module.exports.getFiles = (FolderId) => {
 module.exports.getUsers = () => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM "users"', (err, result) => {
+      if (err) return reject(err)
+      resolve(result.rows)
+    })
+  })
+}
+
+module.exports.setRandomPermissions = () => {
+  return new Promise((resolve, reject) => {
+    db.query(sqlSetRandomPermissions, (err, result) => {
       if (err) return reject(err)
       resolve(result.rows)
     })
