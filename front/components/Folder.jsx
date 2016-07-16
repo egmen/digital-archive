@@ -69,9 +69,9 @@ const FolderItem = React.createClass({
     let pointerStyle = {}
     if (folder.Childs) pointerStyle.cursor = 'pointer'
     return <div>
-      <div style={pointerStyle} onClick={this.toggleChilds} className='row'>
-        <div className='' style={{float: 'left', width: this.props.deep * 15 + 'px'}}>&nbsp;</div>
-        <div className='' style={{float: 'left', width: '10px'}}>{folder.Childs ? this.state.showChilds ? '-' : '+' : <span>&nbsp;</span>}</div>
+      <div style={pointerStyle} onDoubleClick={this.toggleChilds} className='row'>
+        <div className='' style={{float: 'left', width: this.props.deep * 15 + 'px'}} onClick={this.toggleChilds}>&nbsp;</div>
+        <div className='' style={{float: 'left', width: '10px'}} onClick={this.toggleChilds}>{folder.Childs ? this.state.showChilds ? '-' : '+' : <span>&nbsp;</span>}</div>
         <div className='' style={{float: 'left'}}>{folder.Name.length > 20 ? folder.Name.substring(1, 20) + '...' : folder.Name}</div>
         <div className='' style={{float: 'right'}}>{folder.Childs && folder.Childs.length}</div>
       </div>
