@@ -48,3 +48,12 @@ module.exports.getFiles = (FolderId) => {
     })
   })
 }
+
+module.exports.getUsers = () => {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT * FROM "users"', (err, result) => {
+      if (err) return reject(err)
+      resolve(result.rows)
+    })
+  })
+}

@@ -35,6 +35,13 @@ app.get('/files', (req, res) => {
     .catch(console.error)
 })
 
+app.get('/users', (req, res) => {
+  Promise.resolve(req.query.FolderId)
+    .then(db.getUsers)
+    .then(result => res.json(result))
+    .catch(console.error)
+})
+
 app.listen(3000)
 
 function parseTree (tree) {
