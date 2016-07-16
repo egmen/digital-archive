@@ -33,10 +33,6 @@ export const Folder = React.createClass({
     .catch(console.log)
   },
   changeFolder (Id, path) {
-    this.setState({
-      currentFolder: Id,
-      currentFolderPath: path
-    })
     axios({
       method: 'get',
       url: '/files',
@@ -46,7 +42,9 @@ export const Folder = React.createClass({
     })
     .then(res => {
       this.setState({
-        files: res.data
+        files: res.data,
+        currentFolder: Id,
+        currentFolderPath: path
       })
     })
     .catch(console.log)
@@ -72,6 +70,8 @@ export const Folder = React.createClass({
         <Files
           path={this.state.currentFolderPath}
           files={this.state.files}
+          changeFolder={this.changeFolder}
+          currentFolder={this.state.currentFolder}
         />
       </div>
     </div>
@@ -135,6 +135,17 @@ const FolderItem = React.createClass({
 })
 
 const Files = React.createClass({
+  changeFolder (Id) {
+    let newPath = []
+    this.props.path.forEach(item => {
+      if (item.Id === Id) {
+        newPath.push(item)
+        this.props.changeFolder(Id, newPath)
+      } else {
+        newPath.push(item)
+      }
+    })
+  },
   render () {
     let total = 0
     let rows = <tbody>
@@ -150,10 +161,12 @@ const Files = React.createClass({
         : 'Нет файлов в папке'
       }
     </tbody>
-    let currentFolderPath = this.props.path.map(item => {
-      return '/' + item.Name
+    let currentFolderPath = this.props.path.map((item, n) => {
+      let isActive = item.Id === this.props.currentFolder
+      return <span key={n} onClick={() => !isActive && this.changeFolder(item.Id)} style={{cursor: 'pointer'}}>/
+        <span className={isActive ? 'bg-success' : ''}>{item.Name}</span>
+      </span>
     })
-    // console.log(this.props.path)
     return <div>
       <h3>Текущая папка</h3>
       <h4>{currentFolderPath}</h4>
