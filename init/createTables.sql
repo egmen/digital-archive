@@ -72,3 +72,29 @@ CREATE TABLE "permissions" (
   "Name" character varying(50), -- Логин пользователя либо имя группы
   "Permission" int -- Сумма разрешений
 );
+
+-- Рекурсивное построение зависимостей по группам и юзерам
+CREATE MATERIALIZED VIEW "namedPermissions"
+AS
+WITH RECURSIVE perm AS(
+  SELECT f."Id", f."ParentId", "Permission", p."Name",
+    CASE WHEN p."Permission" IS NULL THEN false ELSE true END AS "isOwn"
+  FROM folders f
+  JOIN permissions p ON p."Id" = f."Id"
+  WHERE 1 = 1
+    AND "ParentId" IS NULL
+    UNION ALL
+  SELECT f."Id",
+    f."ParentId",
+    coalesce(p."Permission", fl."Permission") AS "Permission",
+    coalesce(p."Name", fl."Name"),
+    CASE WHEN p."Permission" IS NULL THEN false ELSE true END AS "isOwn"
+  FROM perm fl
+  JOIN folders f ON f."ParentId" = fl."Id"
+  LEFT JOIN permissions p ON p."Id" = f."Id" AND p."Name" = fl."Name"
+  WHERE 1 = 1
+    
+)
+SELECT "Id", "Permission", "Name", "isOwn"
+FROM perm
+;

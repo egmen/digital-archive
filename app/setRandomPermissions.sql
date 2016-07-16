@@ -41,6 +41,8 @@ INSERT INTO "permissions"
 SELECT *
 FROM "tab1"
 ;
+REFRESH MATERIALIZED VIEW "namedPermissions"
+;
 SELECT COUNT(*) cnt
 FROM "permissions"
 ;
