@@ -17,5 +17,6 @@ fs.access('.env', err => {
     require(global.NODE_ROOT + '/init/server.js')
   } else {
     require('dotenv').config()
+    require(global.NODE_ROOT + '/app/server.js')
   }
 })
