@@ -6,4 +6,5 @@ WITH childs AS(
 SELECT f."Id", f."ParentId", f."Name", c."Childs"
 FROM folders f
 LEFT JOIN childs c ON c."ParentId" = f."Id"
+ORDER BY f."Name"
 ;

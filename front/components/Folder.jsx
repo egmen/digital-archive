@@ -11,7 +11,7 @@ export const Folder = React.createClass({
         root: []
       },
       currentFolder: '',
-      currentFolderPath: '',
+      currentFolderPath: [],
       files: []
     }
   },
@@ -61,6 +61,7 @@ export const Folder = React.createClass({
             key={n}
             folders={this.state.folders}
             Id={Id}
+            currentFolder={this.state.currentFolder}
             deep={0}
             changeFolder={this.changeFolder}
           />
@@ -94,21 +95,26 @@ const FolderItem = React.createClass({
     })
   },
   changeFolder (Id, path) {
-    let Name = this.props.folders[this.props.Id].Name
+    let newPath = {
+      Id: this.props.Id,
+      Name: this.props.folders[this.props.Id].Name
+    }
     // Если задана вторая переменная значит это всплывающее событие
     if (path) {
-      this.props.changeFolder(Id, Name + '/' + path)
+      path.unshift(newPath)
+      this.props.changeFolder(Id, path)
     } else {
-      this.props.changeFolder(this.props.Id, Name)
+      this.props.changeFolder(this.props.Id, [newPath])
     }
   },
   render () {
     let folder = this.props.folders[this.props.Id]
+    let activeFolder = this.props.Id === this.props.currentFolder
     return <div>
       <div onDoubleClick={this.toggleChilds} className='row'>
         <div className='' style={{float: 'left', width: this.props.deep * 15 + 'px', cursor: folder.Childs ? 'pointer' : null}} onClick={this.toggleChilds}>&nbsp;</div>
         <div className='' style={{float: 'left', width: '10px', cursor: folder.Childs ? 'pointer' : null}} onClick={this.toggleChilds}>{folder.Childs ? this.state.showChilds ? '-' : '+' : <span>&nbsp;</span>}</div>
-        <div className='' style={{float: 'left', cursor: 'pointer'}} onClick={this.changeFolder}>{folder.Name.length > 20 ? folder.Name.substring(1, 20) + '...' : folder.Name}</div>
+        <div className={activeFolder ? 'bg-success' : ''} style={{float: 'left', cursor: 'pointer'}} onClick={this.changeFolder}>{folder.Name.length > 20 ? folder.Name.substring(1, 20) + '...' : folder.Name}</div>
         <div className='' style={{float: 'right', cursor: 'pointer'}} onClick={this.changeFolder}>{folder.Childs && folder.Childs.length}</div>
       </div>
       {this.state.showChilds && folder.Childs
@@ -117,6 +123,7 @@ const FolderItem = React.createClass({
             key={n}
             folders={this.props.folders}
             Id={Id}
+            currentFolder={this.props.currentFolder}
             deep={this.props.deep + 1}
             changeFolder={this.changeFolder}
           />
@@ -135,7 +142,7 @@ const Files = React.createClass({
         ? this.props.files.map((item, n) => {
           total += +item.Size
           return <tr key={n}>
-            <td>{item.Name}</td>
+            <td>{item.Name.length > 30 ? item.Name.substring(1, 30) + '...' : item.Name}</td>
             <td className='text-right'>{+item.Size ? prettyByte(item.Size) : '0'}</td>
             <td>{moment(item.Ctime).utcOffset(180).format('MM.DD.YYYY HH:MM')}</td>
           </tr>
@@ -143,9 +150,13 @@ const Files = React.createClass({
         : 'Нет файлов в папке'
       }
     </tbody>
+    let currentFolderPath = this.props.path.map(item => {
+      return '/' + item.Name
+    })
+    // console.log(this.props.path)
     return <div>
       <h3>Текущая папка</h3>
-      <h4>{this.props.path}</h4>
+      <h4>{currentFolderPath}</h4>
       <table className='table table-hover table-condensed table-responsive'>
         <thead>
           <tr>
