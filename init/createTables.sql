@@ -66,7 +66,7 @@ CREATE TABLE "userGroups" (
 INSERT INTO "userGroups"
 VALUES ('admin', 'Admins')
 ,('petr', 'Users')
-,('lena', 'Others')
+,('lena', 'Other')
 ;
 
 CREATE TABLE "permissions" (
