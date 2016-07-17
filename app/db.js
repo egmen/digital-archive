@@ -13,6 +13,7 @@ let sqlGetFiles = fs.readFileSync(path.format({dir: __dirname, base: 'getFiles.s
 let sqlGetFolderPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'getFolderPermissions.sql'}), 'utf8')
 let sqlSetRandomPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'setRandomPermissions.sql'}), 'utf8')
 let sqlTogglePermission = fs.readFileSync(path.format({dir: __dirname, base: 'togglePermission.sql'}), 'utf8')
+let sqlAddPermission = fs.readFileSync(path.format({dir: __dirname, base: 'addPermission.sql'}), 'utf8')
 
 /**
  * Подключение к базе данных
@@ -91,11 +92,24 @@ module.exports.setRandomPermissions = () => {
 module.exports.togglePermission = (obj) => {
   return new Promise((resolve, reject) => {
     db.query(sqlTogglePermission, [obj.Id, +obj.PermissionId, obj.Name], (err, result) => {
+      // console.log(result.rowCount)
       if (err) return reject(err)
-      db.query('REFRESH MATERIALIZED VIEW "namedPermissions";', (err, result2) => {
-        if (err) return reject(err)
-        resolve(result.rows)
-      })
+      if (result.rowCount) {
+        refreshView(resolve, reject)
+      } else {
+        db.query(sqlAddPermission, [obj.Id, +obj.PermissionId, obj.Name], (err, result) => {
+          // console.log(sqlAddPermission)
+          if (err) return reject(err)
+          refreshView(resolve, reject)
+        })
+      }
     })
+  })
+}
+
+function refreshView (resolve, reject) {
+  db.query('REFRESH MATERIALIZED VIEW "namedPermissions";', (err, result2) => {
+    if (err) return reject(err)
+    resolve()
   })
 }
