@@ -107,6 +107,16 @@ module.exports.togglePermission = (obj) => {
   })
 }
 
+module.exports.deletePermission = (obj) => {
+  return new Promise((resolve, reject) => {
+    db.query('DELETE FROM "permissions" WHERE "Id" = $1 AND "Name" = $2;', [obj.Id, obj.Name], (err, result) => {
+      // console.log(result.rowCount)
+      if (err) return reject(err)
+      refreshView(resolve, reject)
+    })
+  })
+}
+
 function refreshView (resolve, reject) {
   db.query('REFRESH MATERIALIZED VIEW "namedPermissions";', (err, result2) => {
     if (err) return reject(err)

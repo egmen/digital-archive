@@ -248,13 +248,23 @@ const FolderPermissions = React.createClass({
       })
       .then(res => {
         this.componentWillReceiveProps(this.props)
-        // console.log(res.data)
-        // this.setState({
-        //   folderPermissions: res.data
-        // })
       })
       .catch(console.log)
     }
+  },
+  deletePermission (group) {
+    axios({
+      method: 'post',
+      url: '/deletePermission',
+      params: {
+        Id: this.props.Id,
+        Name: group.Name
+      }
+    })
+    .then(res => {
+      this.componentWillReceiveProps(this.props)
+    })
+    .catch(console.log)
   },
   render () {
     // console.log(this.props)
@@ -282,7 +292,11 @@ const FolderPermissions = React.createClass({
           </tr>
           {this.state.folderPermissions.map((group, n) => {
             return <tr key={n}>
-              <td>{group.Name} ({group.isOwn ? 'свои' : 'насл'})</td>
+              <td>{group.Name} {group.isOwn
+                ? <span className='glyphicon glyphicon-remove pointer'
+                  title='Удалить разрешения'
+                  onClick={() => this.deletePermission(group)}></span>
+                : ''}</td>
               {this.state.permissionsList.map((item, n) => {
                 return <td key={n} className='middle pointer hover' onClick={() => this.chagePermission(group, item)}>{item.Id & group.Permission ? '+' : '-'}</td>
               })}
