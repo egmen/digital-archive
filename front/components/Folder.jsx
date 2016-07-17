@@ -221,14 +221,13 @@ const FolderPermissions = React.createClass({
         }
       })
       .then(res => {
-        console.log(res.data)
+        // console.log(res.data)
         this.setState({
           folderPermissions: res.data
         })
       })
       .catch(console.log)
     }
-    console.log(nextProps)
   },
   render () {
     // console.log(this.props)
