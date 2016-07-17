@@ -35,6 +35,11 @@ function connectDatabase () {
 }
 connectDatabase()
 
+/**
+ * Дерево папок
+ * @param  {String} login Логин пользователя
+ * @return {Array}       Список папок, доступных для чтения пользователем
+ */
 module.exports.getTree = (login) => {
   return new Promise((resolve, reject) => {
     db.query(sqlGetTree, [login], (err, result) => {
@@ -44,6 +49,11 @@ module.exports.getTree = (login) => {
   })
 }
 
+/**
+ * Список файлов
+ * @param  {Uuid} FolderId Id папки
+ * @return {Array}          Список файлов
+ */
 module.exports.getFiles = (FolderId) => {
   return new Promise((resolve, reject) => {
     db.query(sqlGetFiles, [FolderId], (err, result) => {
@@ -53,6 +63,11 @@ module.exports.getFiles = (FolderId) => {
   })
 }
 
+/**
+ * Получение всех разрешений которые висят на папке
+ * @param  {Uuid} FolderId Id папки
+ * @return {Array}          Список разрешений
+ */
 module.exports.getFolderPermissions = (FolderId) => {
   return new Promise((resolve, reject) => {
     db.query(sqlGetFolderPermissions, [FolderId], (err, result) => {
@@ -62,6 +77,10 @@ module.exports.getFolderPermissions = (FolderId) => {
   })
 }
 
+/**
+ * Получение списка пользователей
+ * @return {Array}          Список пользователей
+ */
 module.exports.getUsers = () => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM "users"', (err, result) => {
@@ -71,6 +90,10 @@ module.exports.getUsers = () => {
   })
 }
 
+/**
+ * Получение списка возомжных разрешений
+ * @return {Array}          Список разрешений
+ */
 module.exports.getPermissionsList = () => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM "permissionTypes"', (err, result) => {
@@ -80,6 +103,10 @@ module.exports.getPermissionsList = () => {
   })
 }
 
+/**
+ * Установка случайных разрешений на все папки и файлы
+ * @return {Number} Количество установленных разрешений
+ */
 module.exports.setRandomPermissions = () => {
   return new Promise((resolve, reject) => {
     db.query(sqlSetRandomPermissions, (err, result) => {
@@ -89,6 +116,10 @@ module.exports.setRandomPermissions = () => {
   })
 }
 
+/**
+ * Переключение/добавление разрешений
+ * @param  {Object} obj Id объекта, номер разрешения, имя группы/юзера
+ */
 module.exports.togglePermission = (obj) => {
   return new Promise((resolve, reject) => {
     db.query(sqlTogglePermission, [obj.Id, +obj.PermissionId, obj.Name], (err, result) => {
@@ -107,6 +138,10 @@ module.exports.togglePermission = (obj) => {
   })
 }
 
+/**
+ * Удаление разрешения
+ * @param  {Object} obj Id объекта, имя группы/юзера
+ */
 module.exports.deletePermission = (obj) => {
   return new Promise((resolve, reject) => {
     db.query('DELETE FROM "permissions" WHERE "Id" = $1 AND "Name" = $2;', [obj.Id, obj.Name], (err, result) => {
@@ -117,6 +152,9 @@ module.exports.deletePermission = (obj) => {
   })
 }
 
+/**
+ * Обновление материализованного представления после обновления разрешений
+ */
 function refreshView (resolve, reject) {
   db.query('REFRESH MATERIALIZED VIEW "namedPermissions";', (err, result2) => {
     if (err) return reject(err)

@@ -14,6 +14,9 @@ export default React.createClass({
     this.getUsers()
     this.getPermissions()
   },
+  /**
+   * Получение списка пользователей для выпадающего меню
+   */
   getUsers () {
     axios({
       method: 'get',
@@ -25,6 +28,9 @@ export default React.createClass({
       })
     })
   },
+  /**
+   * Получение списка разрешений для испльзования везде где нужно
+   */
   getPermissions () {
     axios({
       method: 'get',
@@ -39,6 +45,9 @@ export default React.createClass({
       window.permissionsList = permissionsList
     })
   },
+  /**
+   * Установка случайных разрешений на все элементы (если лень руками)
+   */
   randomPermissions () {
     axios({
       method: 'post',

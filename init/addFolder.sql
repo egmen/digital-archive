@@ -1,3 +1,4 @@
+-- Добавление одной директории
 INSERT INTO "folders" ("Id", "ParentId", "Name", "FolderPath")
 SELECT 
 	CAST($1 AS uuid) AS "Id",

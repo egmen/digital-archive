@@ -5,11 +5,14 @@ WITH allusers AS (
 	SELECT "Name"
 	FROM groups
 ), rankusers AS(
+	-- Чтобы каждому элементу соответсвовало одно натуральное число
 	SELECT "Login", rank() OVER (ORDER BY "Login" DESC) n
 	FROM allusers
 ), randomperm AS(
 	SELECT "Id",
+		-- Выбрать случайных пользователей по их номеру
 		CAST(random() * 1000 AS int) % (SELECT COUNT(*) + 1 FROM rankusers) AS usr,
+		-- Выбрать случайное разрешение путём random из максимального
 		CAST(random() * (SELECT SUM("Id") + 1 FROM "permissionTypes") AS int) AS prm
 	FROM folders
 		UNION ALL

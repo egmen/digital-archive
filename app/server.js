@@ -83,6 +83,11 @@ app.use((req, res) => {
 
 app.listen(3000)
 
+/**
+ * Подготовка дерева папок для фронта и определение root папок
+ * @param  {Array} tree Дерево папок от SQL-запроса
+ * @return {Object}     Дерево папок как объект
+ */
 function parseTree (tree) {
   let newTree = {
     root: []

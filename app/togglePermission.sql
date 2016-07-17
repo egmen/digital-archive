@@ -1,3 +1,4 @@
+-- Переключение разрешения путём XOR к текущему разрешению
 UPDATE "permissions"
 SET "Permission" = "Permission" # $2
 WHERE 1 = 1

@@ -39,6 +39,7 @@ CREATE TABLE "users" (
   "Name" character varying(255)
 );
 
+-- Логины юзеров с маленькой буквы
 INSERT INTO "users" ("Login", "Name")
 VALUES ('admin', 'Админ')
 ,('petr', 'Петя')
@@ -50,6 +51,7 @@ CREATE TABLE "groups" (
   "Name" character varying(50) PRIMARY KEY
 );
 
+-- Наименования групп с заглавной буквы
 INSERT INTO "groups" ("Name")
 VALUES ('All')
 ,('Admins')
@@ -75,6 +77,7 @@ CREATE TABLE "permissions" (
 
 -- Рекурсивное построение зависимостей по группам и юзерам
 -- цепочки наследования по каждому с отметкой о том, заданное разрешение или наследованное
+-- простая вьюшка на 200+ тысяч значений строилась больше секунды
 CREATE MATERIALIZED VIEW "namedPermissions"
 AS
 WITH RECURSIVE perm AS(

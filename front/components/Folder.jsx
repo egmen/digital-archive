@@ -21,6 +21,10 @@ export const Folder = React.createClass({
   componentWillReceiveProps (history) {
     this.getTree(history.params.user)
   },
+  /**
+   * Получение дерева папок в зависимости от имени пользователя
+   * @param  {String} user Логин пользователя
+   */
   getTree (user) {
     axios({
       method: 'get',
@@ -36,6 +40,12 @@ export const Folder = React.createClass({
     })
     .catch(console.log)
   },
+  /**
+   * Срабатывает при щелчке на наименование папки (смена текущей папки)
+   * @param  {Uuid} Id     Id текущей папки, прилетевший из недр дерева путём всплытия
+   * @param  {Array} path  Путь до этой папки для хлебных крошек
+   * @return {Array}       Список файлов из папки
+   */
   changeFolder (Id, path) {
     axios({
       method: 'get',
@@ -92,6 +102,9 @@ const FolderItem = React.createClass({
       showChilds: !!window.showingFolders[this.props.Id]
     }
   },
+  /**
+   * Действие при нажатии на +/- для показа вложенных папок
+   */
   toggleChilds () {
     if (this.state.showChilds) {
       delete window.showingFolders[this.props.Id]
@@ -102,6 +115,10 @@ const FolderItem = React.createClass({
       showChilds: !this.state.showChilds
     })
   },
+  /**
+   * Смена текущей папки, инициирует действие, либо передаёт его вышестоящией
+   * одноимённой функции, добавляя свои координаты в переменную path для хлебных крошек
+   */
   changeFolder (Id, path) {
     let newPath = {
       Id: this.props.Id,
@@ -143,16 +160,12 @@ const FolderItem = React.createClass({
 })
 
 const Files = React.createClass({
+  /**
+   * Смена папки инициируемое из хлебных крошек
+   * @param  {Uuid} Id Id папки, передающееся вышестоящему компоненту
+   */
   changeFolder (Id) {
-    let newPath = []
-    this.props.path.forEach(item => {
-      if (item.Id === Id) {
-        newPath.push(item)
-        this.props.changeFolder(Id, newPath)
-      } else {
-        newPath.push(item)
-      }
-    })
+    this.props.changeFolder(Id, this.props.path)
   },
   render () {
     let total = 0
@@ -199,6 +212,9 @@ const Files = React.createClass({
   }
 })
 
+/**
+ * Компонент отображающий и изменяющий текущие разрешения папки
+ */
 const FolderPermissions = React.createClass({
   getInitialState () {
     return {
@@ -206,6 +222,9 @@ const FolderPermissions = React.createClass({
       folderPermissions: []
     }
   },
+  /**
+   * Получение обновлённых разрешений
+   */
   componentWillReceiveProps (nextProps) {
     if (window.permissionsList && this.state.permissionsList.length === 0) {
       this.setState({
@@ -229,6 +248,9 @@ const FolderPermissions = React.createClass({
       .catch(console.log)
     }
   },
+  /**
+   * Изменение конкретного разрешения
+   */
   chagePermission (group, perm) {
     let name = group.Name
     let PermissionId = perm.Id
@@ -252,6 +274,9 @@ const FolderPermissions = React.createClass({
       .catch(console.log)
     }
   },
+  /**
+   * Удаление всех разрешений юзера/группы на папке
+   */
   deletePermission (group) {
     axios({
       method: 'post',
@@ -304,7 +329,6 @@ const FolderPermissions = React.createClass({
           })}
         </tbody> : null}
       </table>
-
     </div>
   }
 })

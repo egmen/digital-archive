@@ -1,3 +1,4 @@
+-- Добавление файлов из текущей директории из JSON
 INSERT INTO "files" (
 	"Id",
 	"FolderId",
