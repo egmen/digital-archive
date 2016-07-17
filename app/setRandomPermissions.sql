@@ -24,7 +24,7 @@ FROM randomperm p
 JOIN rankusers u ON u.n = p.usr
 ;
 
--- Дедупликация значений таблицы "permissions"
+-- Р”РµРґСѓРїР»РёРєР°С†РёСЏ Р·РЅР°С‡РµРЅРёР№ С‚Р°Р±Р»РёС†С‹ "permissions"
 CREATE TEMP TABLE IF NOT EXISTS "tab1"(
    LIKE "permissions"
 );
