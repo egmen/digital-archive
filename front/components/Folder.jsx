@@ -67,21 +67,17 @@ export const Folder = React.createClass({
     return <div className='row'>
       <div className='col-md-3 col-sm-5'>
         <br /><br /><br />
-        <div>
-          <h3>Список папок</h3>
-          {this.state.folders.root.map((Id, n) => {
-            return <FolderItem
-              key={n}
-              folders={this.state.folders}
-              Id={Id}
-              currentFolder={this.state.currentFolder}
-              deep={0}
-              changeFolder={this.changeFolder}
-            />
-          })}
-        </div>
-        <FolderPermissions currentFolder={this.state.folders[this.state.currentFolder]}
-          Id={this.state.currentFolder} />
+        <h3>Список папок</h3>
+        {this.state.folders.root.map((Id, n) => {
+          return <FolderItem
+            key={n}
+            folders={this.state.folders}
+            Id={Id}
+            currentFolder={this.state.currentFolder}
+            deep={0}
+            changeFolder={this.changeFolder}
+          />
+        })}
       </div>
       <div className='col-md-7 col-sm-7'>
         <br /><br /><br />
@@ -91,6 +87,12 @@ export const Folder = React.createClass({
           changeFolder={this.changeFolder}
           currentFolder={this.state.currentFolder}
         />
+      </div>
+      <div className='row'>
+        <div className='col-md-5 col-sm-7'>
+          <FolderPermissions currentFolder={this.state.folders[this.state.currentFolder]}
+            Id={this.state.currentFolder} />
+        </div>
       </div>
     </div>
   }
