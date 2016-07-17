@@ -75,7 +75,7 @@ export default React.createClass({
                   })}
                 </ul>
               </li>
-              <li onClick={this.randomPermissions}><a href='javascript:void(0);'>Установить случайние разрешения</a></li>
+              <li onClick={this.randomPermissions}><a href='javascript:void(0);'>Установить случайные разрешения</a></li>
             </ul>
           </div>
         </div>

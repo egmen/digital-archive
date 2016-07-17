@@ -12,6 +12,7 @@ let sqlGetTree = fs.readFileSync(path.format({dir: __dirname, base: 'getTree.sql
 let sqlGetFiles = fs.readFileSync(path.format({dir: __dirname, base: 'getFiles.sql'}), 'utf8')
 let sqlGetFolderPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'getFolderPermissions.sql'}), 'utf8')
 let sqlSetRandomPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'setRandomPermissions.sql'}), 'utf8')
+let sqlTogglePermission = fs.readFileSync(path.format({dir: __dirname, base: 'togglePermission.sql'}), 'utf8')
 
 /**
  * Подключение к базе данных
@@ -83,6 +84,18 @@ module.exports.setRandomPermissions = () => {
     db.query(sqlSetRandomPermissions, (err, result) => {
       if (err) return reject(err)
       resolve(result.rows)
+    })
+  })
+}
+
+module.exports.togglePermission = (obj) => {
+  return new Promise((resolve, reject) => {
+    db.query(sqlTogglePermission, [obj.Id, +obj.PermissionId, obj.Name], (err, result) => {
+      if (err) return reject(err)
+      db.query('REFRESH MATERIALIZED VIEW "namedPermissions";', (err, result2) => {
+        if (err) return reject(err)
+        resolve(result.rows)
+      })
     })
   })
 }

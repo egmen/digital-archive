@@ -229,12 +229,39 @@ const FolderPermissions = React.createClass({
       .catch(console.log)
     }
   },
+  chagePermission (group, perm) {
+    let name = group.Name
+    let PermissionId = perm.Id
+    let text = (PermissionId & group.Permission ? 'Удалить' : 'Установить') + ' разрешение \n' +
+      'на ' + perm.Name + '\n' +
+      'для ' + (name === name.toLowerCase() ? 'пользователя ' : 'группы ') + name + '\n' +
+      'для папки ' + this.props.currentFolder.Name + '?'
+    if (window.confirm(text)) {
+      axios({
+        method: 'post',
+        url: '/togglePermission',
+        params: {
+          Id: this.props.Id,
+          PermissionId: PermissionId,
+          Name: name
+        }
+      })
+      .then(res => {
+        this.componentWillReceiveProps(this.props)
+        // console.log(res.data)
+        // this.setState({
+        //   folderPermissions: res.data
+        // })
+      })
+      .catch(console.log)
+    }
+  },
   render () {
     // console.log(this.props)
     let folder = this.props.currentFolder
     return <div>
       <h3>Текущие разрешения</h3>
-      <table className='table table-hover table-condensed table-bordered'>
+      <table className='table table-condensed table-bordered'>
         <thead>
           <tr>
             <th rowSpan='2' className='middle'>Группа</th>
@@ -257,7 +284,7 @@ const FolderPermissions = React.createClass({
             return <tr key={n}>
               <td>{group.Name} ({group.isOwn ? 'свои' : 'насл'})</td>
               {this.state.permissionsList.map((item, n) => {
-                return <td key={n} className='middle'>{item.Id & group.Permission ? '+' : '-'}</td>
+                return <td key={n} className='middle pointer hover' onClick={() => this.chagePermission(group, item)}>{item.Id & group.Permission ? '+' : '-'}</td>
               })}
             </tr>
           })}
