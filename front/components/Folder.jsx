@@ -120,10 +120,10 @@ const FolderItem = React.createClass({
     let activeFolder = this.props.Id === this.props.currentFolder
     return <div>
       <div onDoubleClick={this.toggleChilds} className='row'>
-        <div className='' style={{float: 'left', width: this.props.deep * 15 + 'px', cursor: folder.Childs ? 'pointer' : null}} onClick={this.toggleChilds}>&nbsp;</div>
-        <div className='' style={{float: 'left', width: '10px', cursor: folder.Childs ? 'pointer' : null}} onClick={this.toggleChilds}>{folder.Childs ? this.state.showChilds ? '-' : '+' : <span>&nbsp;</span>}</div>
+        <div className={folder.Childs ? 'pointer' : ''} style={{float: 'left', width: this.props.deep * 15 + 'px'}} onClick={this.toggleChilds}>&nbsp;</div>
+        <div className={folder.Childs ? 'pointer' : ''} style={{float: 'left', width: '10px'}} onClick={this.toggleChilds}>{folder.Childs ? this.state.showChilds ? '-' : '+' : <span>&nbsp;</span>}</div>
         <div className={activeFolder ? 'bg-success' : ''} style={{float: 'left', cursor: 'pointer'}} onClick={this.changeFolder}>{folder.Name.length > 20 ? folder.Name.substring(1, 20) + '...' : folder.Name}</div>
-        <div className='' style={{float: 'right', cursor: 'pointer'}} onClick={this.changeFolder}>{folder.Childs && folder.Childs.length}</div>
+        <div className={folder.Childs ? 'pointer' : ''} style={{float: 'right'}} onClick={this.changeFolder}>{folder.Childs && folder.Childs.length}</div>
       </div>
       {this.state.showChilds && folder.Childs
         ? folder.Childs.map((Id, n) => {
@@ -237,8 +237,8 @@ const FolderPermissions = React.createClass({
       <table className='table table-hover table-condensed table-bordered'>
         <thead>
           <tr>
-            <th rowSpan='2'>Группа</th>
-            <th colSpan={this.state.permissionsList.length}>Разрешения</th>
+            <th rowSpan='2' className='middle'>Группа</th>
+            <th colSpan={this.state.permissionsList.length} className='middle'>Разрешения</th>
           </tr>
           <tr style={{'writingMode': 'sideways-lr'}}>
             {this.state.permissionsList.map((item, n) => {
@@ -250,14 +250,14 @@ const FolderPermissions = React.createClass({
           <tr>
             <td title='В скобках информация, от кого получены'>Текущие ({folder.permName})</td>
             {this.state.permissionsList.map((item, n) => {
-              return <td key={n}>{item.Id & folder.Permission ? '+' : '-'}</td>
+              return <td key={n} className='middle'>{item.Id & folder.Permission ? '+' : '-'}</td>
             })}
           </tr>
           {this.state.folderPermissions.map((group, n) => {
             return <tr key={n}>
               <td>{group.Name} ({group.isOwn ? 'свои' : 'насл'})</td>
               {this.state.permissionsList.map((item, n) => {
-                return <td key={n}>{item.Id & group.Permission ? '+' : '-'}</td>
+                return <td key={n} className='middle'>{item.Id & group.Permission ? '+' : '-'}</td>
               })}
             </tr>
           })}
