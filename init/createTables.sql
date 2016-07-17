@@ -74,6 +74,7 @@ CREATE TABLE "permissions" (
 );
 
 -- Рекурсивное построение зависимостей по группам и юзерам
+-- цепочки наследования по каждому с отметкой о том, заданное разрешение или наследованное
 CREATE MATERIALIZED VIEW "namedPermissions"
 AS
 WITH RECURSIVE perm AS(

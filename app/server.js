@@ -21,7 +21,7 @@ app.use(require('serve-static')(global.NODE_ROOT + '/public'))
  * @return {File}     Файл с конфигурацией окружения
  */
 app.get('/tree', (req, res) => {
-  Promise.resolve()
+  Promise.resolve(req.query.user)
     .then(db.getTree)
     .then(parseTree)
     .then(result => res.json(result))

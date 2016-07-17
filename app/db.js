@@ -32,9 +32,9 @@ function connectDatabase () {
 }
 connectDatabase()
 
-module.exports.getTree = () => {
+module.exports.getTree = (login) => {
   return new Promise((resolve, reject) => {
-    db.query(sqlGetTree, (err, result) => {
+    db.query(sqlGetTree, [login], (err, result) => {
       if (err) return reject(err)
       resolve(result.rows)
     })
