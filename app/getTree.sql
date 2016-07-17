@@ -35,11 +35,14 @@ WITH RECURSIVE usergroups AS(
 	LEFT JOIN "namedPermissions" puser ON puser."Id" = f."Id" AND puser."Name" = $1
 	WHERE 1 = 1
 		AND f."ParentId" IS NULL
-		AND CASE
-			WHEN puser."isOwn" = true THEN puser."Permission"
-			WHEN pgroup."isOwn" = true THEN pgroup."Permission"
-			ELSE 0
-		END & 1 > 0 -- Базовое разрешение на чтение папки
+		AND (1 = 0
+			OR CASE
+				WHEN puser."isOwn" = true THEN puser."Permission"
+				WHEN pgroup."isOwn" = true THEN pgroup."Permission"
+				ELSE 0
+				END & 1 > 0 -- Базовое разрешение на чтение папки
+			OR $1 = 'admin' -- Админ видит всё, вне зависимости от разрешений
+			)
 		UNION ALL
 	SELECT
 		f."Id",
@@ -60,11 +63,14 @@ WITH RECURSIVE usergroups AS(
 	LEFT JOIN pgroup ON pgroup."Id" = f."Id"
 	LEFT JOIN "namedPermissions" puser ON puser."Id" = f."Id" AND puser."Name" = $1
 	WHERE 1 = 1
-		AND CASE
-			WHEN puser."isOwn" = true THEN puser."Permission"
-			WHEN pgroup."isOwn" = true THEN pgroup."Permission"
-			ELSE p."Permission"
-		END & 1 > 0 -- Базовое разрешение на чтение папки
+		AND (1 = 0
+			OR CASE
+				WHEN puser."isOwn" = true THEN puser."Permission"
+				WHEN pgroup."isOwn" = true THEN pgroup."Permission"
+				ELSE p."Permission"
+				END & 1 > 0 -- Базовое разрешение на чтение папки
+			OR $1 = 'admin' -- Админ видит всё, вне зависимости от разрешений
+			)
 ),childs AS(
 	SELECT f."ParentId", json_agg(f."Id") AS "Childs"
 	FROM folders f
