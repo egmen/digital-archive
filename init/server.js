@@ -12,7 +12,7 @@ const dotenv = require('dotenv')
 const Promise = require('bluebird')
 const init = require('./index')
 
-let app = express()
+const app = express()
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
@@ -22,10 +22,10 @@ app.use(bodyParser.json())
 app.get('*', (req, res) => {
   fs.readFile('./init/index.html', 'utf8', (err, content) => {
     if (err) {
-      res.send(err)
+      return res.send(err)
     } else {
-      let dbName = generate().raw.join('')
-      res.send(content.replace(/{{dbName}}/, dbName))
+      const dbName = generate().raw.join('')
+      return res.send(content.replace(/{{dbName}}/, dbName))
     }
   })
 })
@@ -38,11 +38,11 @@ app.get('*', (req, res) => {
  */
 app.post('*', (req, res) => {
   // Создание файла из объекта конфигурации
-  let env = Object.keys(req.body)
+  const env = Object.keys(req.body)
     .filter(key => req.body[key])
     .map(key => key + '=' + req.body[key])
     .join('\n')
-  let config = dotenv.parse(env)
+  const config = dotenv.parse(env)
   // Инициализация
   Promise.resolve(config)
     .then(init.createDatabase)

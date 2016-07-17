@@ -9,14 +9,15 @@ let db
 const fs = require('fs')
 const path = require('path')
 const uuid = require('node-uuid')
-let sqlGetTree = fs.readFileSync(path.format({dir: __dirname, base: 'getTree.sql'}), 'utf8')
-let sqlGetFiles = fs.readFileSync(path.format({dir: __dirname, base: 'getFiles.sql'}), 'utf8')
-let sqlGetFolderPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'getFolderPermissions.sql'}), 'utf8')
-let sqlSetRandomPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'setRandomPermissions.sql'}), 'utf8')
-let sqlTogglePermission = fs.readFileSync(path.format({dir: __dirname, base: 'togglePermission.sql'}), 'utf8')
-let sqlAddPermission = fs.readFileSync(path.format({dir: __dirname, base: 'addPermission.sql'}), 'utf8')
-let sqlAddFiles = fs.readFileSync(path.format({dir: __dirname, base: 'addFiles.sql'}), 'utf8')
-let sqlAddFolder = fs.readFileSync(path.format({dir: __dirname, base: 'addFolder.sql'}), 'utf8')
+const sqlPath = path.join(__dirname, 'sql')
+const sqlGetTree = fs.readFileSync(path.format({dir: sqlPath, base: 'getTree.sql'}), 'utf8')
+const sqlGetFiles = fs.readFileSync(path.format({dir: sqlPath, base: 'getFiles.sql'}), 'utf8')
+const sqlGetFolderPermissions = fs.readFileSync(path.format({dir: sqlPath, base: 'getFolderPermissions.sql'}), 'utf8')
+const sqlSetRandomPermissions = fs.readFileSync(path.format({dir: sqlPath, base: 'setRandomPermissions.sql'}), 'utf8')
+const sqlTogglePermission = fs.readFileSync(path.format({dir: sqlPath, base: 'togglePermission.sql'}), 'utf8')
+const sqlAddPermission = fs.readFileSync(path.format({dir: sqlPath, base: 'addPermission.sql'}), 'utf8')
+const sqlAddFiles = fs.readFileSync(path.format({dir: sqlPath, base: 'addFiles.sql'}), 'utf8')
+const sqlAddFolder = fs.readFileSync(path.format({dir: sqlPath, base: 'addFolder.sql'}), 'utf8')
 
 /**
  * Подключение к базе данных
@@ -30,7 +31,7 @@ function connectDatabase () {
   if (process.env.PGUSER) cfg.user = process.env.PGUSER
   if (process.env.PGPASSWORD) cfg.password = process.env.PGPASSWORD
   if (process.env.PGHOST) cfg.host = process.env.PGHOST
-  let client = new pg.Client(cfg)
+  const client = new pg.Client(cfg)
   client.connect(err => {
     if (err) return console.error(err)
     db = client
@@ -43,7 +44,7 @@ connectDatabase()
  * @param  {String} login Логин пользователя
  * @return {Array}       Список папок, доступных для чтения пользователем
  */
-module.exports.getTree = (login) => {
+module.exports.getTree = login => {
   return new Promise((resolve, reject) => {
     db.query(sqlGetTree, [login], (err, result) => {
       if (err) return reject(err)
@@ -57,7 +58,7 @@ module.exports.getTree = (login) => {
  * @param  {Uuid} FolderId Id папки
  * @return {Array}          Список файлов
  */
-module.exports.getFiles = (FolderId) => {
+module.exports.getFiles = FolderId => {
   return new Promise((resolve, reject) => {
     db.query(sqlGetFiles, [FolderId], (err, result) => {
       if (err) return reject(err)
@@ -71,7 +72,7 @@ module.exports.getFiles = (FolderId) => {
  * @param  {Uuid} FolderId Id папки
  * @return {Array}          Список разрешений
  */
-module.exports.getFolderPermissions = (FolderId) => {
+module.exports.getFolderPermissions = FolderId => {
   return new Promise((resolve, reject) => {
     db.query(sqlGetFolderPermissions, [FolderId], (err, result) => {
       if (err) return reject(err)
@@ -123,7 +124,7 @@ module.exports.setRandomPermissions = () => {
  * Переключение/добавление разрешений
  * @param  {Object} obj Id объекта, номер разрешения, имя группы/юзера
  */
-module.exports.togglePermission = (obj) => {
+module.exports.togglePermission = obj => {
   return new Promise((resolve, reject) => {
     db.query(sqlTogglePermission, [obj.Id, +obj.PermissionId, obj.Name], (err, result) => {
       // console.log(result.rowCount)
@@ -145,7 +146,7 @@ module.exports.togglePermission = (obj) => {
  * Удаление разрешения
  * @param  {Object} obj Id объекта, имя группы/юзера
  */
-module.exports.deletePermission = (obj) => {
+module.exports.deletePermission = obj => {
   return new Promise((resolve, reject) => {
     db.query('DELETE FROM "permissions" WHERE "Id" = $1 AND "Name" = $2;', [obj.Id, obj.Name], (err, result) => {
       // console.log(result.rowCount)
@@ -170,7 +171,7 @@ function refreshView (resolve, reject) {
  */
 module.exports.fillTables = query => {
   return new Promise((resolve, reject) => {
-    let folder = query.folder
+    const folder = query.folder
     if (folder) {
       Promise.resolve()
         .then(() => readFolder(db, folder))
@@ -191,14 +192,14 @@ module.exports.fillTables = query => {
  */
 function readFolder (client, folder, parentId) {
   return new Promise((resolve, reject) => {
-    let items = fs.readdirSync(folder)
-    let FolderId = uuid.v4()
-    let name = path.basename(folder)
+    const items = fs.readdirSync(folder)
+    const FolderId = uuid.v4()
+    const name = path.basename(folder)
     client.query(sqlAddFolder, [FolderId, parentId, name, folder], (err, result) => {
       if (err) return reject(err)
       Promise.all(items.map(item => {
-        let fn = path.format({dir: folder, base: item})
-        let stat = fs.statSync(fn)
+        const fn = path.format({dir: folder, base: item})
+        const stat = fs.statSync(fn)
         if (stat.isFile()) {
           return {
             Id: uuid.v4(),
@@ -213,7 +214,7 @@ function readFolder (client, folder, parentId) {
       }))
       .then(items => items.filter(item => item))
       .then(res => {
-        let filesJson = JSON.stringify(res)
+        const filesJson = JSON.stringify(res)
         client.query(sqlAddFiles, [filesJson, FolderId], (err, result) => {
           if (err) return reject(err)
           resolve()

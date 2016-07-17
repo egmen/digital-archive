@@ -7,18 +7,17 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const db = require('./db')
-// const Promise = require('bluebird')
+const Promise = require('bluebird')
 
-let app = express()
+const app = express()
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(require('serve-static')(global.NODE_ROOT + '/public'))
+app.disable('etag')
 
 /**
- * Приём введённой конфигурации, проверка настроек
- * и создание базы данных с дефолтной информацией
- * @param  {Object}   конфигурация окружение в теле запроса
- * @return {File}     Файл с конфигурацией окружения
+ * Запрос дерева папок по имени пользователя
+ * отдаются только доступные для чтения
  */
 app.get('/tree', (req, res) => {
   Promise.resolve(req.query.user)
@@ -28,6 +27,9 @@ app.get('/tree', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Список файлов конкретной директории
+ */
 app.get('/files', (req, res) => {
   Promise.resolve(req.query.FolderId)
     .then(db.getFiles)
@@ -35,6 +37,9 @@ app.get('/files', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Полный список пользователей для выпадающего меню
+ */
 app.get('/users', (req, res) => {
   Promise.resolve()
     .then(db.getUsers)
@@ -42,6 +47,9 @@ app.get('/users', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Установка случайных разрешений на все папки и файлы
+ */
 app.post('/randomPermissions', (req, res) => {
   Promise.resolve()
     .then(db.setRandomPermissions)
@@ -49,6 +57,9 @@ app.post('/randomPermissions', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Получение списка возомжных разрешений
+ */
 app.get('/permissionsList', (req, res) => {
   Promise.resolve()
     .then(db.getPermissionsList)
@@ -56,6 +67,9 @@ app.get('/permissionsList', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Получение всех разрешений которые висят на папке
+ */
 app.get('/folderPermissions', (req, res) => {
   Promise.resolve(req.query.FolderId)
     .then(db.getFolderPermissions)
@@ -63,6 +77,9 @@ app.get('/folderPermissions', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Переключение/добавление разрешений
+ */
 app.post('/togglePermission', (req, res) => {
   Promise.resolve(req.query)
     .then(db.togglePermission)
@@ -70,6 +87,9 @@ app.post('/togglePermission', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Удаление разрешения
+ */
 app.post('/deletePermission', (req, res) => {
   Promise.resolve(req.query)
     .then(db.deletePermission)
@@ -77,6 +97,9 @@ app.post('/deletePermission', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * Заполнение таблиц списком файлов и папок
+ */
 app.post('/addDirectory', (req, res) => {
   Promise.resolve(req.query)
     .then(db.fillTables)
@@ -84,6 +107,9 @@ app.post('/addDirectory', (req, res) => {
     .catch(console.error)
 })
 
+/**
+ * При любой непонятке отдавай index.html (вдруг это react-router развлекается)
+ */
 app.use((req, res) => {
   return res.sendFile(global.NODE_ROOT + '/public/index.html')
 })

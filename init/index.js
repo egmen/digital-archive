@@ -9,7 +9,7 @@ const pg = require('pg')
 const fs = require('fs')
 const winston = require('winston')
 const path = require('path')
-let sqlCreateTables = fs.readFileSync(path.format({dir: __dirname, base: 'createTables.sql'}), 'utf8')
+const sqlCreateTables = fs.readFileSync(path.format({dir: __dirname, base: 'createTables.sql'}), 'utf8')
 
 /**
  * Проверка базы данных и создания новой
@@ -21,10 +21,10 @@ module.exports.createDatabase = config => {
     let cfg = {
       database: 'postgres'
     }
-    if (config.PGUSER) cfg.user = config.PGUSER
-    if (config.PGPASSWORD) cfg.password = config.PGPASSWORD
-    if (config.PGHOST) cfg.host = config.PGHOST
-    let client = new pg.Client(cfg)
+    config.PGUSER && (cfg.user = config.PGUSER)
+    config.PGPASSWORD && (cfg.password = config.PGPASSWORD)
+    config.PGHOST && (cfg.host = config.PGHOST)
+    const client = new pg.Client(cfg)
     client.connect(err => {
       if (err) return reject(err)
       // Не понял как безопасно подставить переменную в запрос
@@ -49,10 +49,10 @@ module.exports.connectDatabase = config => {
     let cfg = {
       database: config.PGDATABASE
     }
-    if (config.PGUSER) cfg.user = config.PGUSER
-    if (config.PGPASSWORD) cfg.password = config.PGPASSWORD
-    if (config.PGHOST) cfg.host = config.PGHOST
-    let client = new pg.Client(cfg)
+    config.PGUSER && (cfg.user = config.PGUSER)
+    config.PGPASSWORD && (cfg.password = config.PGPASSWORD)
+    config.PGHOST && (cfg.host = config.PGHOST)
+    const client = new pg.Client(cfg)
     client.connect(err => {
       if (err) return reject(err)
       resolve(client)
