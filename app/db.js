@@ -59,6 +59,15 @@ module.exports.getUsers = () => {
   })
 }
 
+module.exports.getPermissionsList = () => {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT * FROM "permissionTypes"', (err, result) => {
+      if (err) return reject(err)
+      resolve(result.rows)
+    })
+  })
+}
+
 module.exports.setRandomPermissions = () => {
   return new Promise((resolve, reject) => {
     db.query(sqlSetRandomPermissions, (err, result) => {

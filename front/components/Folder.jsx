@@ -55,21 +55,25 @@ export const Folder = React.createClass({
   },
   render () {
     return <div className='row'>
-      <div className='col-md-2 col-sm-4'>
+      <div className='col-md-3 col-sm-5'>
         <br /><br /><br />
-        <h3>Список папок</h3>
-        {this.state.folders.root.map((Id, n) => {
-          return <FolderItem
-            key={n}
-            folders={this.state.folders}
-            Id={Id}
-            currentFolder={this.state.currentFolder}
-            deep={0}
-            changeFolder={this.changeFolder}
-          />
-        })}
+        <div>
+          <h3>Список папок</h3>
+          {this.state.folders.root.map((Id, n) => {
+            return <FolderItem
+              key={n}
+              folders={this.state.folders}
+              Id={Id}
+              currentFolder={this.state.currentFolder}
+              deep={0}
+              changeFolder={this.changeFolder}
+            />
+          })}
+        </div>
+        <FolderPermissions currentFolder={this.state.folders[this.state.currentFolder]}
+          Id={this.state.currentFolder} />
       </div>
-      <div className='col-md-8 col-sm-8'>
+      <div className='col-md-7 col-sm-7'>
         <br /><br /><br />
         <Files
           path={this.state.currentFolderPath}
@@ -191,6 +195,50 @@ const Files = React.createClass({
         </tfoot>
         {rows}
       </table>
+    </div>
+  }
+})
+
+const FolderPermissions = React.createClass({
+  getInitialState () {
+    return {
+      permissionsList: []
+    }
+  },
+  componentWillReceiveProps () {
+    if (window.permissionsList && this.state.permissionsList.length === 0) {
+      this.setState({
+        permissionsList: window.permissionsList
+      })
+    }
+  },
+  render () {
+    console.log(this.props)
+    let folder = this.props.currentFolder
+    return <div>
+      <h3>Текущие разрешения</h3>
+      <table className='table table-hover table-condensed table-bordered'>
+        <thead>
+          <tr>
+            <th rowSpan='2'>Группа</th>
+            <th colSpan={this.state.permissionsList.length}>Разрешения</th>
+          </tr>
+          <tr style={{'writingMode': 'sideways-lr'}}>
+            {this.state.permissionsList.map((item, n) => {
+              return <th key={n}>{item.Name}</th>
+            })}
+          </tr>
+        </thead>
+        {folder ? <tbody>
+          <tr>
+            <td title='В скобках информация, от кого получены'>Текущие ({folder.permName})</td>
+            {this.state.permissionsList.map((item, n) => {
+              return <td key={n}>{item.Id & folder.Permission ? '+' : '-'}</td>
+            })}
+          </tr>
+        </tbody> : null}
+      </table>
+
     </div>
   }
 })

@@ -12,6 +12,7 @@ export default React.createClass({
   },
   componentWillMount () {
     this.getUsers()
+    this.getPermissions()
   },
   getUsers () {
     axios({
@@ -22,6 +23,20 @@ export default React.createClass({
       this.setState({
         users: res.data
       })
+    })
+  },
+  getPermissions () {
+    axios({
+      method: 'get',
+      url: '/permissionsList'
+    })
+    .then(res => {
+      let permissionsList = res.data.map(item => ({
+        Id: item.Id,
+        Name: item.Name,
+        VarName: item.VarName
+      }))
+      window.permissionsList = permissionsList
     })
   },
   randomPermissions () {
