@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { Link } from 'react-router'
+import { browserHistory } from 'react-router'
 
 export default React.createClass({
   getInitialState () {
@@ -58,6 +59,21 @@ export default React.createClass({
       window.alert('Установлено ' + cnt + ' разрешений')
     })
   },
+  addFolder () {
+    let folder = window.prompt('Введите имя папки:', '')
+    if (folder) {
+      axios({
+        method: 'post',
+        url: '/addDirectory',
+        params: {
+          folder: folder
+        }
+      })
+      .then(res => {
+        browserHistory.push('/admin')
+      })
+    }
+  },
   render () {
     return <div>
       <nav className='navbar navbar-inverse navbar-fixed-top' role='navigation'>
@@ -74,7 +90,7 @@ export default React.createClass({
           <div className='collapse navbar-collapse'>
             <ul className='nav navbar-nav'>
               <li className='dropdown'>
-                <a href='#' className='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>Выбрать пользователя ({this.state.currentName})<span className='caret'></span></a>
+                <a href='#' className='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>Пользователь ({this.state.currentName})<span className='caret'></span></a>
                 <ul className='dropdown-menu'>
                   <li onClick={() => this.setState({currentUser: 'anonymous', currentName: 'Аноним'})}
                     className={this.state.currentUser === 'anonymous' ? 'active' : ''}
@@ -87,7 +103,8 @@ export default React.createClass({
                   })}
                 </ul>
               </li>
-              <li onClick={this.randomPermissions}><a href='javascript:void(0);'>Установить случайные разрешения</a></li>
+              <li onClick={this.randomPermissions}><a href='javascript:void(0);'>Cлучайные разрешения</a></li>
+              <li onClick={this.addFolder}><a href='javascript:void(0);'>Добавить папку</a></li>
             </ul>
           </div>
         </div>

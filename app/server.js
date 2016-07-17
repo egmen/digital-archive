@@ -77,10 +77,18 @@ app.post('/deletePermission', (req, res) => {
     .catch(console.error)
 })
 
+app.post('/addDirectory', (req, res) => {
+  Promise.resolve(req.query)
+    .then(db.fillTables)
+    .then(result => res.json(result))
+    .catch(console.error)
+})
+
 app.use((req, res) => {
   return res.sendFile(global.NODE_ROOT + '/public/index.html')
 })
 
+console.log('Server listening 3000 port')
 app.listen(3000)
 
 /**

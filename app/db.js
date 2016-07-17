@@ -8,12 +8,15 @@ const pg = require('pg')
 let db
 const fs = require('fs')
 const path = require('path')
+const uuid = require('node-uuid')
 let sqlGetTree = fs.readFileSync(path.format({dir: __dirname, base: 'getTree.sql'}), 'utf8')
 let sqlGetFiles = fs.readFileSync(path.format({dir: __dirname, base: 'getFiles.sql'}), 'utf8')
 let sqlGetFolderPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'getFolderPermissions.sql'}), 'utf8')
 let sqlSetRandomPermissions = fs.readFileSync(path.format({dir: __dirname, base: 'setRandomPermissions.sql'}), 'utf8')
 let sqlTogglePermission = fs.readFileSync(path.format({dir: __dirname, base: 'togglePermission.sql'}), 'utf8')
 let sqlAddPermission = fs.readFileSync(path.format({dir: __dirname, base: 'addPermission.sql'}), 'utf8')
+let sqlAddFiles = fs.readFileSync(path.format({dir: __dirname, base: 'addFiles.sql'}), 'utf8')
+let sqlAddFolder = fs.readFileSync(path.format({dir: __dirname, base: 'addFolder.sql'}), 'utf8')
 
 /**
  * Подключение к базе данных
@@ -159,5 +162,63 @@ function refreshView (resolve, reject) {
   db.query('REFRESH MATERIALIZED VIEW "namedPermissions";', (err, result2) => {
     if (err) return reject(err)
     resolve()
+  })
+}
+
+/**
+ * Заполнение таблиц списком файлов и папок
+ */
+module.exports.fillTables = query => {
+  return new Promise((resolve, reject) => {
+    let folder = query.folder
+    if (folder) {
+      Promise.resolve()
+        .then(() => readFolder(db, folder))
+        .then(() => {
+          resolve({msg: 'Обработали'})
+        })
+    } else {
+      resolve({msg: 'Папка не найдена'})
+    }
+  })
+}
+
+/**
+ * Парсинг папки с передачей в БД
+ * @param  {[type]} client   Подключение к базе данных
+ * @param  {[type]} folder   Исследуемая папка
+ * @param  {[type]} parentId Id родительской папки
+ */
+function readFolder (client, folder, parentId) {
+  return new Promise((resolve, reject) => {
+    let items = fs.readdirSync(folder)
+    let FolderId = uuid.v4()
+    let name = path.basename(folder)
+    client.query(sqlAddFolder, [FolderId, parentId, name, folder], (err, result) => {
+      if (err) return reject(err)
+      Promise.all(items.map(item => {
+        let fn = path.format({dir: folder, base: item})
+        let stat = fs.statSync(fn)
+        if (stat.isFile()) {
+          return {
+            Id: uuid.v4(),
+            Name: item,
+            Size: stat.size,
+            Ctime: stat.ctime,
+            Type: path.extname(fn)
+          }
+        } else {
+          return readFolder(client, fn, FolderId)
+        }
+      }))
+      .then(items => items.filter(item => item))
+      .then(res => {
+        let filesJson = JSON.stringify(res)
+        client.query(sqlAddFiles, [filesJson, FolderId], (err, result) => {
+          if (err) return reject(err)
+          resolve()
+        })
+      })
+    })
   })
 }

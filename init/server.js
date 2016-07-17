@@ -45,16 +45,14 @@ app.post('*', (req, res) => {
   let config = dotenv.parse(env)
   // Инициализация
   Promise.resolve(config)
-    .then(init.checkDirectory)
     .then(init.createDatabase)
     .then(init.connectDatabase)
     .then(init.createTables)
-    .then(init.fillTables)
-    .then(console.log)
+    // .then(console.log)
     .then(() => {
       fs.writeFileSync('./.env', env)
-      res.send(env)
-      res.end()
+      res.redirect('http://localhost:3000')
+      process.exit()
     })
     .catch(err => {
       console.error(err)
@@ -62,4 +60,5 @@ app.post('*', (req, res) => {
     })
 })
 
+console.log('Server listening 8080 port')
 app.listen(8080)
