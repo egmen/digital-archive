@@ -6,8 +6,8 @@ export default React.createClass({
   getInitialState () {
     return {
       users: [],
-      currentUser: 'admin',
-      currentName: 'Админ'
+      currentUser: 'anonymous',
+      currentName: 'Аноним'
     }
   },
   componentWillMount () {
@@ -67,6 +67,9 @@ export default React.createClass({
               <li className='dropdown'>
                 <a href='#' className='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>Выбрать пользователя ({this.state.currentName})<span className='caret'></span></a>
                 <ul className='dropdown-menu'>
+                  <li onClick={() => this.setState({currentUser: 'anonymous', currentName: 'Аноним'})}
+                    className={this.state.currentUser === 'anonymous' ? 'active' : ''}
+                    ><Link to={'anonymous'}>Аноним</Link></li>
                   {this.state.users.map((item, n) => {
                     return <li key={n}
                       onClick={() => this.setState({currentUser: item.Login, currentName: item.Name})}
