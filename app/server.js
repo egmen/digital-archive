@@ -63,7 +63,9 @@ function parseTree (tree) {
     newTree[item.Id] = {
       ParentId: item.ParentId,
       Name: item.Name,
-      Childs: item.Childs
+      Childs: item.Childs,
+      Permission: item.Permission,
+      permName: item.permName
     }
     if (!item.ParentId) newTree.root.push(item.Id)
   })

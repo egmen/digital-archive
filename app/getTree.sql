@@ -6,9 +6,11 @@ WITH RECURSIVE usergroups AS(
 	SELECT 'All', $1
 ), pgroup AS(
 	-- Групповые наследования и наследования для всех имеют одинаковый приоритет, поэтому объединены
-	SELECT p."Id", u."Login", bit_or(p."Permission") AS "Permission", CAST(max(CAST("isOwn" AS int)) AS boolean) "isOwn"
+	-- рассматриваются только явно заданные разрешения
+	SELECT p."Id", u."Login", bit_or(p."Permission") AS "Permission", true "isOwn", string_agg(p."Name", ',') AS "permName"
 	FROM "namedPermissions" p
 	JOIN usergroups u ON u."Name" = p."Name"
+	WHERE p."isOwn" = true
 	GROUP BY p."Id", u."Login"
 ),perm AS(
 	-- Приоритет имеет юзерское разрешение заданное для конкретного элемента
@@ -22,7 +24,12 @@ WITH RECURSIVE usergroups AS(
 			WHEN puser."isOwn" = true THEN puser."Permission"
 			WHEN pgroup."isOwn" = true THEN pgroup."Permission"
 			ELSE 0
-		END "Permission"
+		END "Permission",
+		CASE
+			WHEN puser."isOwn" = true THEN 'user'
+			WHEN pgroup."isOwn" = true THEN pgroup."permName"
+			ELSE ''
+		END "permName"
 	FROM folders f
 	LEFT JOIN pgroup ON pgroup."Id" = f."Id"
 	LEFT JOIN "namedPermissions" puser ON puser."Id" = f."Id" AND puser."Name" = $1
@@ -37,7 +44,12 @@ WITH RECURSIVE usergroups AS(
 			WHEN puser."isOwn" = true THEN puser."Permission"
 			WHEN pgroup."isOwn" = true THEN pgroup."Permission"
 			ELSE p."Permission"
-		END "Permission"
+		END "Permission",
+		CASE
+			WHEN puser."isOwn" = true THEN 'user'
+			WHEN pgroup."isOwn" = true THEN pgroup."permName"
+			ELSE p."permName"
+		END "permName"
 	FROM perm p
 	JOIN folders f ON f."ParentId" = p."Id"
 	LEFT JOIN pgroup ON pgroup."Id" = f."Id"
@@ -56,7 +68,8 @@ SELECT
 	f."ParentId",
 	f."Name",
 	f."Permission",
-	c."Childs"
+	c."Childs",
+	f."permName"
 FROM perm f
 LEFT JOIN childs c ON c."ParentId" = f."Id"
 WHERE 1 = 1
