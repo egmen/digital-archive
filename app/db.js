@@ -50,6 +50,15 @@ module.exports.getFiles = (FolderId) => {
   })
 }
 
+module.exports.getFolderPermissions = (FolderId) => {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT * FROM "namedPermissions" WHERE "Id" = $1 ORDER BY ascii("Name"), "Name";', [FolderId], (err, result) => {
+      if (err) return reject(err)
+      resolve(result.rows)
+    })
+  })
+}
+
 module.exports.getUsers = () => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM "users"', (err, result) => {

@@ -202,18 +202,36 @@ const Files = React.createClass({
 const FolderPermissions = React.createClass({
   getInitialState () {
     return {
-      permissionsList: []
+      permissionsList: [],
+      folderPermissions: []
     }
   },
-  componentWillReceiveProps () {
+  componentWillReceiveProps (nextProps) {
     if (window.permissionsList && this.state.permissionsList.length === 0) {
       this.setState({
         permissionsList: window.permissionsList
       })
     }
+    if (nextProps.Id) {
+      axios({
+        method: 'get',
+        url: '/folderPermissions',
+        params: {
+          FolderId: nextProps.Id
+        }
+      })
+      .then(res => {
+        console.log(res.data)
+        this.setState({
+          folderPermissions: res.data
+        })
+      })
+      .catch(console.log)
+    }
+    console.log(nextProps)
   },
   render () {
-    console.log(this.props)
+    // console.log(this.props)
     let folder = this.props.currentFolder
     return <div>
       <h3>Текущие разрешения</h3>
@@ -236,6 +254,14 @@ const FolderPermissions = React.createClass({
               return <td key={n}>{item.Id & folder.Permission ? '+' : '-'}</td>
             })}
           </tr>
+          {this.state.folderPermissions.map((group, n) => {
+            return <tr key={n}>
+              <td>{group.Name} ({group.isOwn ? 'свои' : 'насл'})</td>
+              {this.state.permissionsList.map((item, n) => {
+                return <td key={n}>{item.Id & group.Permission ? '+' : '-'}</td>
+              })}
+            </tr>
+          })}
         </tbody> : null}
       </table>
 

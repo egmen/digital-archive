@@ -36,14 +36,14 @@ app.get('/files', (req, res) => {
 })
 
 app.get('/users', (req, res) => {
-  Promise.resolve(req.query.FolderId)
+  Promise.resolve()
     .then(db.getUsers)
     .then(result => res.json(result))
     .catch(console.error)
 })
 
 app.post('/randomPermissions', (req, res) => {
-  Promise.resolve(req.query.FolderId)
+  Promise.resolve()
     .then(db.setRandomPermissions)
     .then(result => res.json(result))
     .catch(console.error)
@@ -52,6 +52,13 @@ app.post('/randomPermissions', (req, res) => {
 app.get('/permissionsList', (req, res) => {
   Promise.resolve()
     .then(db.getPermissionsList)
+    .then(result => res.json(result))
+    .catch(console.error)
+})
+
+app.get('/folderPermissions', (req, res) => {
+  Promise.resolve(req.query.FolderId)
+    .then(db.getFolderPermissions)
     .then(result => res.json(result))
     .catch(console.error)
 })
